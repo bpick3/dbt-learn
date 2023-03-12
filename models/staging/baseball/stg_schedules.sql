@@ -1,7 +1,7 @@
 select 
-    id as order_id,
-    user_id as customer_id,
-    order_date,
+    gameId as game,
+    seasonId as season,
+    year,
     status
 
-from raw.jaffle_shop.orders
+from bigquery-public-data.baseball.schedules

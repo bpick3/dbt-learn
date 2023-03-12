@@ -1,25 +1,25 @@
-with customers as (
+with games as (
 
-    select * from {{ ref('stg_customers') }}
-
-),
-
-orders as (
-
-    select * from {{ ref('stg_orders') }}
+    select * from {{ ref('stg_games') }}
 
 ),
 
-customer_orders as (
+schedules as (
+
+    select * from {{ ref('stg_schedules') }}
+
+),
+
+game_schedules as (
 
     select
-        customer_id,
+        gameId,
 
-        min(order_date) as first_order_date,
-        max(order_date) as most_recent_order_date,
-        count(order_id) as number_of_orders
+        min(startTime) as start_time,
+        sum(attendance) as attendance,
+        sum(duration/60.0) as hours
 
-    from orders
+    from schedules
 
     group by 1
 
@@ -28,16 +28,15 @@ customer_orders as (
 final as (
 
     select  
-        customers.customer_id,
-        customers.first_name,
-        cusomers.last_name,
-        customer_orders.first_order_date,
-        customer_orders.most_recent_order_date,
-        coalesce(customer_orders.number_of_orders, 0) as number_of_orders
+        games.gameId,
+        games.awayTeamName,
+        games.homeTeamName,
+        games.start_time,
+        games.duration
     
-    from customers
+    from games
 
-    left join customer_orders using (customer_id)
+    left join game_schedules using (gameId)
 
 )
 
